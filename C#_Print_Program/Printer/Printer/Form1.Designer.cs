@@ -36,13 +36,12 @@
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.tbLog = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tbAction = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.buttonPrintFile = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,12 +83,14 @@
             this.buttonDisconnect.UseVisualStyleBackColor = true;
             this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
             // 
+            // serialPort1
+            // 
+            this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripConnectionStatus,
-            this.toolStripStatusLabel2,
-            this.toolStripProgressBar1});
+            this.toolStripConnectionStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 239);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(354, 22);
@@ -103,17 +104,6 @@
             this.toolStripConnectionStatus.Size = new System.Drawing.Size(79, 17);
             this.toolStripConnectionStatus.Text = "Disconnected";
             // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(88, 17);
-            this.toolStripStatusLabel2.Spring = true;
-            // 
-            // toolStripProgressBar1
-            // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
-            // 
             // tbLog
             // 
             this.tbLog.Location = new System.Drawing.Point(12, 136);
@@ -121,7 +111,7 @@
             this.tbLog.Name = "tbLog";
             this.tbLog.ReadOnly = true;
             this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbLog.Size = new System.Drawing.Size(260, 100);
+            this.tbLog.Size = new System.Drawing.Size(330, 100);
             this.tbLog.TabIndex = 5;
             // 
             // label1
@@ -145,7 +135,7 @@
             this.tbAction.Name = "tbAction";
             this.tbAction.Size = new System.Drawing.Size(174, 50);
             this.tbAction.TabIndex = 7;
-            this.tbAction.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
+            this.tbAction.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAction_KeyDown);
             // 
             // label2
             // 
@@ -156,11 +146,22 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Поле для управления стрелками";
             // 
+            // buttonPrintFile
+            // 
+            this.buttonPrintFile.Location = new System.Drawing.Point(13, 91);
+            this.buttonPrintFile.Name = "buttonPrintFile";
+            this.buttonPrintFile.Size = new System.Drawing.Size(75, 23);
+            this.buttonPrintFile.TabIndex = 9;
+            this.buttonPrintFile.Text = "Print from file";
+            this.buttonPrintFile.UseVisualStyleBackColor = true;
+            this.buttonPrintFile.Click += new System.EventHandler(this.buttonPrintFile_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(354, 261);
+            this.Controls.Add(this.buttonPrintFile);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbAction);
             this.Controls.Add(this.label1);
@@ -171,6 +172,7 @@
             this.Controls.Add(this.lbPort);
             this.Controls.Add(this.cbPorts);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.statusStrip1.ResumeLayout(false);
@@ -189,13 +191,12 @@
         private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripConnectionStatus;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.TextBox tbLog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox tbAction;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonPrintFile;
     }
 }
 
