@@ -6,10 +6,10 @@ Serial port = null;
 
 // select and modify the appropriate line for your operating system
 // leave as null to use interactive port (press 'p' in the program)
-//String portname = null;
+String portname = null;
 //String portname = Serial.list()[0]; // Mac OS X
 //String portname = "/dev/ttyUSB0"; // Linux
-String portname = "COM6"; // Windows
+//String portname = "COM6"; // Windows
 
 boolean streaming = false;
 float speed = 0.001;
@@ -149,7 +149,7 @@ void stream()
     else break;
   }
   
-  println(gcode[i]);
+  println(gcode[i]); //<>//
   port.write(gcode[i] + '\n');
   i++;
 }
