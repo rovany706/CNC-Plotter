@@ -12,7 +12,7 @@
 #define LINE_BUFFER_LENGTH 512
 
 // Servo position for Up and Down 
-const int penZUp = 80;
+const int penZUp = 100;
 const int penZDown = 40;
 
 // Servo on PWM pin 6
@@ -47,15 +47,15 @@ int penDelay = 50;
 // Motor steps to go 1 millimeter.
 // Use test sketch to go 100 steps. Measure the length of line. 
 // Calculate steps per mm. Enter here.
-float StepsPerMillimeterX = 6.0;
-float StepsPerMillimeterY = 6.0;
+float StepsPerMillimeterX = 6.06;
+float StepsPerMillimeterY = 5.88;
 
 // Drawing robot limits, in mm
 // OK to start with. Could go up to 50 mm if calibrated well. 
 float Xmin = 0;
-float Xmax = 40;
+float Xmax = 55;
 float Ymin = 0;
-float Ymax = 40;
+float Ymax = 50;
 float Zmin = 0;
 float Zmax = 1;
 
@@ -82,7 +82,7 @@ void setup() {
   Serial.begin( 9600 );
   
   penServo.attach(penServoPin);
-  penServo.write(penZUp);
+  penServo.write(penZDown);
   delay(200);
 
   // Decrease if necessary
