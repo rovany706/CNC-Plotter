@@ -44,7 +44,6 @@ namespace Printer
                 serialPort1.Open();
                 isConnected = true;
                 toolStripConnectionStatus.Text = "Connected";
-                //timer1.Enabled = true;
                 tbAction.Enabled = true;
             }
             catch
@@ -55,26 +54,20 @@ namespace Printer
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = false;
             serialPort1.Close();
             isConnected = false;
             tbAction.Enabled = false;
             toolStripConnectionStatus.Text = "Disconnected";
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-
+            x = 0;
+            y = 0;
         }
 
         private void buttonPrintFile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Title = "Открыть файл";
-            openDialog.Filter = "Файл GCode (.gcode)|*.gcode";
-            if (openDialog.ShowDialog() == DialogResult.OK)
+            string path = string.Empty;
+            if (OpenFile(ref path) == DialogResult.OK)
             {
-                gcode = File.ReadAllLines(openDialog.FileName);
+                gcode = File.ReadAllLines(path);
                 if (MessageBox.Show("Начать печать?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     i = 0;
@@ -82,7 +75,16 @@ namespace Printer
                     printFile();
                 }
             }
+        }
 
+        private DialogResult OpenFile(ref string path)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Title = "Открыть файл";
+            openDialog.Filter = "Файл GCode (.gcode)|*.gcode";
+            DialogResult result = openDialog.ShowDialog();
+            path = openDialog.FileName;
+            return result;
         }
 
         private void tbAction_KeyDown(object sender, KeyEventArgs e)
@@ -93,12 +95,51 @@ namespace Printer
                     x++;
                 else if (e.KeyCode == Keys.Right && x > 0)
                     x--;
-                else if (e.KeyCode == Keys.Up && y < 40)
+                else if (e.KeyCode == Keys.Up && y < 50)
                     y++;
                 else if (e.KeyCode == Keys.Down && y > 0)
                     y--;
                 serialPort1.Write("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000\n");
             }
+        }
+
+        private void buttonSend_Click(object sender, EventArgs e)
+        {
+            serialPort1.WriteLine(tbCommand.Text);
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (isConnected)
+            {
+                if (e.Modifiers == Keys.Control && e.KeyCode == Keys.O)
+                {
+                    string path = string.Empty;
+                    if (OpenFile(ref path) == DialogResult.OK)
+                    {
+                        gcode = File.ReadAllLines(path);
+                        if (MessageBox.Show("Начать печать?", "Подтверждение", MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            i = 0;
+                            streaming = true;
+                            printFile();
+                        }
+                    }
+                }
+
+                if (e.Modifiers == Keys.Control && e.KeyCode == Keys.R)
+                {
+                    x = 0;
+                    y = 0;
+                    serialPort1.Write("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000\n");
+                }
+            }
+        }
+
+        private void tbCommand_KeyDown(object sender, KeyEventArgs e)
+        {
+
         }
 
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -109,7 +150,6 @@ namespace Printer
                 printFile();
             if (r.StartsWith("error"))
                 printFile();
-
         }
 
         private void printFile()

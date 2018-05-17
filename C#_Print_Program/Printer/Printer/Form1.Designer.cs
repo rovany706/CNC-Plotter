@@ -38,10 +38,12 @@
             this.toolStripConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbLog = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tbAction = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.buttonPrintFile = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tbCommand = new System.Windows.Forms.TextBox();
+            this.buttonSend = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,9 +93,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripConnectionStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 239);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 397);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(354, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(624, 22);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
@@ -111,7 +113,7 @@
             this.tbLog.Name = "tbLog";
             this.tbLog.ReadOnly = true;
             this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbLog.Size = new System.Drawing.Size(330, 100);
+            this.tbLog.Size = new System.Drawing.Size(338, 258);
             this.tbLog.TabIndex = 5;
             // 
             // label1
@@ -122,10 +124,6 @@
             this.label1.Size = new System.Drawing.Size(25, 13);
             this.label1.TabIndex = 6;
             this.label1.Text = "Log";
-            // 
-            // timer1
-            // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // tbAction
             // 
@@ -156,11 +154,42 @@
             this.buttonPrintFile.UseVisualStyleBackColor = true;
             this.buttonPrintFile.Click += new System.EventHandler(this.buttonPrintFile_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(356, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(73, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Ввод команд";
+            // 
+            // tbCommand
+            // 
+            this.tbCommand.Location = new System.Drawing.Point(359, 23);
+            this.tbCommand.Multiline = true;
+            this.tbCommand.Name = "tbCommand";
+            this.tbCommand.Size = new System.Drawing.Size(253, 51);
+            this.tbCommand.TabIndex = 11;
+            this.tbCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbCommand_KeyDown);
+            // 
+            // buttonSend
+            // 
+            this.buttonSend.Location = new System.Drawing.Point(359, 90);
+            this.buttonSend.Name = "buttonSend";
+            this.buttonSend.Size = new System.Drawing.Size(75, 23);
+            this.buttonSend.TabIndex = 12;
+            this.buttonSend.Text = "Send";
+            this.buttonSend.UseVisualStyleBackColor = true;
+            this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(354, 261);
+            this.ClientSize = new System.Drawing.Size(624, 419);
+            this.Controls.Add(this.buttonSend);
+            this.Controls.Add(this.tbCommand);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.buttonPrintFile);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbAction);
@@ -171,10 +200,12 @@
             this.Controls.Add(this.buttonConnect);
             this.Controls.Add(this.lbPort);
             this.Controls.Add(this.cbPorts);
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -193,10 +224,12 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripConnectionStatus;
         private System.Windows.Forms.TextBox tbLog;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox tbAction;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonPrintFile;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox tbCommand;
+        private System.Windows.Forms.Button buttonSend;
     }
 }
 
