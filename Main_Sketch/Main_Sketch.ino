@@ -53,9 +53,9 @@ float StepsPerMillimeterY = 5.88;
 // Drawing robot limits, in mm
 // OK to start with. Could go up to 50 mm if calibrated well. 
 float Xmin = 0;
-float Xmax = 55;
+float Xmax = 40;
 float Ymin = 0;
-float Ymax = 50;
+float Ymax = 40;
 float Zmin = 0;
 float Zmax = 1;
 
@@ -82,7 +82,7 @@ void setup() {
   Serial.begin( 9600 );
   
   penServo.attach(penServoPin);
-  penServo.write(penZDown);
+  penServo.write(penZUp);
   delay(200);
 
   // Decrease if necessary
