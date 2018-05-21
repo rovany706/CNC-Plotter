@@ -15,9 +15,8 @@ namespace Printer
     public partial class Form1 : Form
     {
         private int x = 0, y = 0, i = 0;
-        private bool isConnected = false;
+        private bool isConnected = false, streaming = false, isPenUp = false;
         private string[] gcode;
-        private bool streaming = false;
         public Form1()
         {
             InitializeComponent();
@@ -25,30 +24,39 @@ namespace Printer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string[] ports = SerialPort.GetPortNames();
-            cbPorts.DataSource = ports;
+            cbPorts.DataSource = Adapter.UpdatePorts();
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
         {
-            serialPort1.PortName = cbPorts.SelectedItem.ToString();
-            serialPort1.BaudRate = 9600;
-            serialPort1.DtrEnable = true;
-            serialPort1.Parity = Parity.None;
-            serialPort1.StopBits = StopBits.One;
-            serialPort1.ReadTimeout = 1000;
-            serialPort1.WriteTimeout = 1000;
+            if(cbPorts.Items.Count != 0)
+            {
+                serialPort1.PortName = cbPorts.SelectedItem.ToString();
+                serialPort1.BaudRate = 9600;
+                serialPort1.DtrEnable = true;
+                serialPort1.Parity = Parity.None;
+                serialPort1.StopBits = StopBits.One;
+                serialPort1.ReadTimeout = 1000;
+                serialPort1.WriteTimeout = 1000;
 
-            try
-            {
-                serialPort1.Open();
-                isConnected = true;
-                toolStripConnectionStatus.Text = "Connected";
-                tbAction.Enabled = true;
-            }
-            catch
-            {
-                MessageBox.Show("Error while opening port" + serialPort1.PortName, "Error");
+                try
+                {
+                    serialPort1.Open();
+                    isConnected = true;
+                    toolStripConnectionStatus.Text = "Connected";
+                    tbAction.Enabled = true;
+                    tbCommand.Enabled = true;
+                    buttonConnect.Enabled = false;
+                    buttonDisconnect.Enabled = true;
+                    buttonSend.Enabled = true;
+                    toolStripMenuItemOpenFile.Enabled = true;
+                    timerRefreshPorts.Enabled = false;
+                    tbLog.Clear();
+                }
+                catch
+                {
+                    MessageBox.Show("Error while opening port" + serialPort1.PortName, "Error");
+                }
             }
         }
 
@@ -57,49 +65,44 @@ namespace Printer
             serialPort1.Close();
             isConnected = false;
             tbAction.Enabled = false;
+            tbCommand.Enabled = false;
+            buttonConnect.Enabled = true;
+            buttonDisconnect.Enabled = false;
+            buttonSend.Enabled = false;
+            toolStripMenuItemOpenFile.Enabled = false;
+            timerRefreshPorts.Enabled = true;
             toolStripConnectionStatus.Text = "Disconnected";
             x = 0;
             y = 0;
-        }
-
-        private void buttonPrintFile_Click(object sender, EventArgs e)
-        {
-            string path = string.Empty;
-            if (OpenFile(ref path) == DialogResult.OK)
-            {
-                gcode = File.ReadAllLines(path);
-                if (MessageBox.Show("Начать печать?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    i = 0;
-                    streaming = true;
-                    printFile();
-                }
-            }
-        }
-
-        private DialogResult OpenFile(ref string path)
-        {
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Title = "Открыть файл";
-            openDialog.Filter = "Файл GCode (.gcode)|*.gcode";
-            DialogResult result = openDialog.ShowDialog();
-            path = openDialog.FileName;
-            return result;
         }
 
         private void tbAction_KeyDown(object sender, KeyEventArgs e)
         {
             if (isConnected)
             {
-                if (e.KeyCode == Keys.Left && x < 40)
+                if (e.KeyCode == Keys.Right && x < 40)
                     x++;
-                else if (e.KeyCode == Keys.Right && x > 0)
+                else if (e.KeyCode == Keys.Left && x > 0)
                     x--;
                 else if (e.KeyCode == Keys.Up && y < 50)
                     y++;
                 else if (e.KeyCode == Keys.Down && y > 0)
                     y--;
-                serialPort1.Write("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000\n");
+                serialPort1.WriteLine("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000");
+                if (e.KeyCode == Keys.Space)
+                {
+                    if (isPenUp)
+                    {
+                        isPenUp = false;
+                        serialPort1.WriteLine("D");
+                    }
+                    else
+                    {
+                        isPenUp = true;
+                        serialPort1.WriteLine("U");
+                    }
+                }
+                tbAction.Clear();
             }
         }
 
@@ -114,8 +117,7 @@ namespace Printer
             {
                 if (e.Modifiers == Keys.Control && e.KeyCode == Keys.O)
                 {
-                    string path = string.Empty;
-                    if (OpenFile(ref path) == DialogResult.OK)
+                    if (Adapter.OpenFile(out string path) == DialogResult.OK)
                     {
                         gcode = File.ReadAllLines(path);
                         if (MessageBox.Show("Начать печать?", "Подтверждение", MessageBoxButtons.YesNo,
@@ -123,6 +125,7 @@ namespace Printer
                         {
                             i = 0;
                             streaming = true;
+                            buttonsStop.Enabled = true;
                             printFile();
                         }
                     }
@@ -132,14 +135,56 @@ namespace Printer
                 {
                     x = 0;
                     y = 0;
-                    serialPort1.Write("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000\n");
+                    serialPort1.WriteLine("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000");
+                }
+            }
+        }
+
+        private void buttonClearLog_Click(object sender, EventArgs e)
+        {
+            tbLog.Clear();
+        }
+
+        private void timerRefreshPorts_Tick(object sender, EventArgs e)
+        {
+            cbPorts.SelectedIndex = -1;
+            cbPorts.DataSource = Adapter.UpdatePorts();
+        }
+
+        private void buttonsStop_Click(object sender, EventArgs e)
+        {
+            streaming = false;
+            x = 0;
+            y = 0;
+            serialPort1.WriteLine("U");
+            serialPort1.WriteLine("G1 X" + x + ".000" + "Y" + y + ".000 Z0.000");
+            buttonsStop.Enabled = false;
+            MessageBox.Show("Печать прервана!");
+        }
+
+        private void toolStripMenuItemOpenFile_Click(object sender, EventArgs e)
+        {
+            if (Adapter.OpenFile(out string path) == DialogResult.OK)
+            {
+                gcode = File.ReadAllLines(path);
+                if (MessageBox.Show("Начать печать?", "Подтверждение", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    i = 0;
+                    streaming = true;
+                    buttonsStop.Enabled = true;
+                    printFile();
                 }
             }
         }
 
         private void tbCommand_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.KeyCode == Keys.Enter)
+            {
+                serialPort1.WriteLine(tbCommand.Text.Trim().ToUpper());
+                tbCommand.Clear();
+            }
         }
 
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -161,6 +206,7 @@ namespace Printer
                 if (i == gcode.Length)
                 {
                     streaming = false;
+                    buttonsStop.Enabled = false;
                     MessageBox.Show("Печать завершена!");
                     return;
                 }
